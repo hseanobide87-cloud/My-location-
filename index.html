@@ -6,25 +6,46 @@
     
     <meta name="google-site-verification" content="googlea25513e694d287f4" />
     
-    <title>HusseinMod | Blue Edition</title>
+    <title>HusseinGUI_91</title>
     <style>
         :root {
-            --main-color: #007bff;
-            --bg-dark: #050505;
-            --card-bg: #111111;
+            --main-color: #007bff; /* الأزرق الملكي */
+            --bg-overlay: rgba(0, 0, 0, 0.7); /* طبقة تعتيم لكي تظهر الأزرار */
+            --card-bg: rgba(17, 17, 17, 0.85); /* شفافية خفيفة للكروت */
             --text-main: #ffffff;
             --text-sec: #999;
         }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+            background-color: black;
+            
+            /* تنسيق الصورة كخلفية ثابتة */
+            background-image: url('/storage/emulated/0/Pictures/Screenshots/Screenshot_20260412-221712~2.png'); /* اسم الملف الذي سترفعه */
+            background-size: cover; /* تجعل الصورة تغطي الشاشة بالكامل */
+            background-position: center; /* تمركز الصورة */
+            background-attachment: fixed; /* الصورة لا تتحرك مع التمرير */
+            position: relative;
+        }
+
+        /* طبقة تظليل فوق الصورة لضمان وضوح النصوص والأزرار */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6); /* درجة التعتيم */
+            z-index: 0;
+        }
+
+        #login-screen, #main-content {
+            position: relative;
+            z-index: 1; /* لكي تظهر فوق التعتيم */
         }
 
         #login-screen {
@@ -32,9 +53,10 @@
             padding: 40px;
             border-radius: 15px;
             border: 1px solid var(--main-color);
-            box-shadow: 0 0 30px rgba(0, 123, 255, 0.2); /* توهج أزرق */
+            box-shadow: 0 0 30px rgba(0, 123, 255, 0.4);
             width: 320px;
             text-align: center;
+            backdrop-filter: blur(5px); /* تأثير ضبابي خلف النافذة */
         }
 
         #main-content {
@@ -49,6 +71,8 @@
             border-bottom: 2px solid var(--main-color);
             margin-bottom: 30px;
             padding-bottom: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
         }
 
         .scripts-grid {
@@ -63,12 +87,13 @@
             overflow: hidden;
             border: 1px solid #222;
             transition: 0.3s;
+            backdrop-filter: blur(5px);
         }
 
         .script-card:hover {
             border-color: var(--main-color);
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
         }
 
         .script-image {
@@ -76,18 +101,6 @@
             height: 140px;
             object-fit: cover;
             filter: grayscale(20%);
-        }
-
-        .script-details {
-            padding: 15px;
-        }
-
-        .script-title {
-            color: var(--main-color);
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 8px;
-            display: block;
         }
 
         .btn-copy {
@@ -111,7 +124,7 @@
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
-            background: #000;
+            background: rgba(0,0,0,0.8);
             border: 1px solid #333;
             color: #fff;
             text-align: center;
@@ -131,7 +144,7 @@
 <body>
 
     <div id="login-screen">
-        <h2 style="color:var(--main-color)">اهلا بك في النوقع</h2>
+        <h2 style="color:var(--main-color)">اهلا بك في الموقع</h2>
         <input type="text" id="username" placeholder="أدخل اسمك">
         <button class="login-btn" onclick="startHub()">دخول</button>
     </div>
@@ -146,32 +159,32 @@
             
             <div class="script-card">
                 <img src="https://i.ytimg.com/vi/qV1D6V6x6fM/maxresdefault.jpg" class="script-image">
-                <div class="script-details">
-                    <span class="script-title">c00lgui v3rx</span>
+                <div style="padding:15px">
+                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">c00lgui v3rx</span>
                     <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/MiRw3b/c00lgui-v3rx/main/c00lguiv3rx.lua\'))()')">COPY SCRIPT</button>
                 </div>
             </div>
 
             <div class="script-card">
                 <img src="https://i.ytimg.com/vi/OatfS2f9Vf0/maxresdefault.jpg" class="script-image">
-                <div class="script-details">
-                    <span class="script-title">Zyad AFK Script</span>
+                <div style="padding:15px">
+                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">Zyad AFK Script</span>
                     <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://gist.githubusercontent.com/zyad71810-afk/a9eaa9dd774e28b62edec5087dd4ca64/raw/34bc55cae7f274ef81c6961f6b95e51cb526e04f/gistfile1.txt\'))()')">COPY SCRIPT</button>
                 </div>
             </div>
 
             <div class="script-card">
                 <img src="https://i.ytimg.com/vi/t4A_oR3iB6Q/maxresdefault.jpg" class="script-image">
-                <div class="script-details">
-                    <span class="script-title">Axom Executor Script</span>
+                <div style="padding:15px">
+                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">Axom Executor Script</span>
                     <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/adamowaissi22-boop/Axom/refs/heads/main/Axom%20excuter%20script\'))()')">COPY SCRIPT</button>
                 </div>
             </div>
 
             <div class="script-card">
                 <img src="https://img.youtube.com/vi/w68LpA9b7fE/0.jpg" class="script-image">
-                <div class="script-details">
-                    <span class="script-title">RC7 CLASSIC</span>
+                <div style="padding:15px">
+                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">RC7 CLASSIC</span>
                     <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/CoreGui/Scripts/main/RC7\'))()')">COPY SCRIPT</button>
                 </div>
             </div>
