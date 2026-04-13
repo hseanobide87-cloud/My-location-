@@ -3,209 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="google-site-verification" content="googlea25513e694d287f4" />
-    
-    <title>HusseinGUI_91</title>
+    <title>HusseinMod Hub</title>
     <style>
         :root {
             --main-color: #007bff;
-            --bg-overlay: rgba(0, 0, 0, 0.7); /* طبقة تعتيم لكي تظهر الأزرار */
-            --card-bg: rgba(17, 17, 17, 0.85); /* شفافية خفيفة للكروت */
+            --card-bg: rgba(10, 10, 10, 0.95);
             --text-main: #ffffff;
-            --text-sec: #999;
+            --nav-bg: rgba(0, 0, 0, 0.9);
+            --danger-color: #ff4d4d;
+            --admin-color: #ffcc00;
         }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-color: black;
-            
-            /* تنسيق الصورة كخلفية ثابتة */
-            background-image: url('/storage/emulated/0/Pictures/Screenshots/Screenshot_20260412-221712~2.png'); /* اسم الملف الذي سترفعه */
-            background-size: cover; /* تجعل الصورة تغطي الشاشة بالكامل */
-            background-position: center; /* تمركز الصورة */
-            background-attachment: fixed; /* الصورة لا تتحرك مع التمرير */
-            position: relative;
+            margin: 0; min-height: 100vh;
+            background: black url('') no-repeat center center fixed;
+            background-size: cover; color: var(--text-main);
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* طبقة تظليل فوق الصورة لضمان وضوح النصوص والأزرار */
         body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.6); /* درجة التعتيم */
-            z-index: 0;
+            content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85); z-index: 0;
         }
 
-        #login-screen, #main-content {
-            position: relative;
-            z-index: 1; /* لكي تظهر فوق التعتيم */
+        /* القائمة العلوية */
+        .navbar {
+            position: fixed; top: 0; width: 100%;
+            background: var(--nav-bg); display: none;
+            justify-content: center; padding: 15px 0;
+            z-index: 10; border-bottom: 2px solid var(--main-color);
         }
 
-        #login-screen {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 15px;
-            border: 1px solid var(--main-color);
-            box-shadow: 0 0 30px rgba(0, 123, 255, 0.4);
-            width: 320px;
-            text-align: center;
-            backdrop-filter: blur(5px);
+        .nav-link { color: white; margin: 0 15px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
+        .nav-link:hover { color: var(--main-color); }
+
+        .container { position: relative; z-index: 1; width: 90%; max-width: 1100px; margin-top: 100px; }
+
+        /* شاشات الدخول والـ PIN */
+        #login-screen, .pin-modal {
+            background: var(--card-bg); padding: 30px; border-radius: 20px;
+            border: 1px solid var(--main-color); text-align: center;
+            width: 320px; margin: 80px auto; backdrop-filter: blur(15px);
+            box-shadow: 0 0 30px rgba(0, 123, 255, 0.2);
         }
 
-        #main-content {
-            display: none;
-            width: 95%;
-            max-width: 1200px;
-            padding: 20px;
+        /* شريط البحث */
+        #search-box {
+            width: 100%; max-width: 500px; margin: 0 auto 30px auto;
+            display: block; padding: 12px; border-radius: 25px;
+            border: 1px solid var(--main-color); background: rgba(0,0,0,0.6);
+            color: white; text-align: center; outline: none;
         }
 
-        .header {
-            text-align: center;
-            border-bottom: 2px solid var(--main-color);
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-        }
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .scripts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
+        /* كروت السكربتات */
+        .scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .script-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: 0.3s;
-            backdrop-filter: blur(5px);
+            background: var(--card-bg); border-radius: 15px; border: 1px solid #333;
+            overflow: hidden; transition: 0.3s;
+        }
+        .script-card:hover { border-color: var(--main-color); transform: translateY(-5px); }
+        .script-img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid #222; }
+
+        input, textarea {
+            width: 100%; padding: 12px; margin-bottom: 12px;
+            background: #111; border: 1px solid #444;
+            color: #fff; border-radius: 8px; box-sizing: border-box;
         }
 
-        .script-card:hover {
-            border-color: var(--main-color);
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+        button {
+            background: var(--main-color); color: white; border: none;
+            padding: 12px; cursor: pointer; font-weight: bold; border-radius: 8px;
+            width: 100%; transition: 0.3s;
         }
+        button:hover { opacity: 0.8; }
 
-        .script-image {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            filter: grayscale(20%);
+        /* لوحة الإدارة */
+        .stats-grid { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            flex: 1; background: rgba(255, 204, 0, 0.1);
+            border: 1px solid var(--admin-color); padding: 20px;
+            border-radius: 12px; text-align: center;
         }
+        .admin-log-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        .admin-log-table td, .admin-log-table th { padding: 10px; border: 1px solid #333; text-align: center; }
 
-        .btn-copy {
-            background: transparent;
-            color: var(--main-color);
-            border: 1px solid var(--main-color);
-            padding: 8px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
+        /* لوحة الـ PIN */
+        .pin-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .p-btn { background: #222; border: 1px solid #444; padding: 15px; font-size: 20px; border-radius: 8px; }
 
-        .btn-copy:hover {
-            background: var(--main-color);
-            color: #fff;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid #333;
-            color: #fff;
-            text-align: center;
-        }
-
-        .login-btn {
-            background: var(--main-color);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .action-btns { display: flex; gap: 10px; padding: 15px; }
+        .copy-btn { background: transparent; border: 1px solid var(--main-color); color: var(--main-color); }
+        .del-btn { background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h2 style="color:var(--main-color)">اهلا بك في الموقع</h2>
-        <input type="text" id="username" placeholder="أدخل اسمك">
-        <button class="login-btn" onclick="startHub()">دخول</button>
+        <h2 style="color:var(--main-color)">سجل دخول لك</h2>
+        <input type="text" id="reg-name" placeholder="اسم المطور">
+        <input type="email" id="reg-email" placeholder="الجيميل (Gmail)">
+        <input type="password" id="reg-pass" placeholder="كلمة السر">
+        <button onclick="userLogin()">دخول النظام</button>
     </div>
 
-    <div id="main-content">
-        <div class="header">
-            <h1 style="color:var(--main-color)">SCRIPT HUB</h1>
-            <p>المشغل: <span id="   op-name   " style="color:var(--main-color)"></span></p>
+    <div id="pin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100;">
+        <div class="pin-modal">
+            <h3 style="color:var(--admin-color)">رمز الأمان (PIN)</h3>
+            <input type="password" id="pin-display" readonly style="text-align:center; font-size:24px; letter-spacing:5px;">
+            <div class="pin-btns">
+                <button class="p-btn" onclick="addPin('1')">1</button>
+                <button class="p-btn" onclick="addPin('2')">2</button>
+                <button class="p-btn" onclick="addPin('3')">3</button>
+                <button class="p-btn" onclick="addPin('4')">4</button>
+                <button class="p-btn" onclick="addPin('5')">5</button>
+                <button class="p-btn" onclick="addPin('6')">6</button>
+                <button class="p-btn" onclick="addPin('7')">7</button>
+                <button class="p-btn" onclick="addPin('8')">8</button>
+                <button class="p-btn" onclick="addPin('9')">9</button>
+                <button class="p-btn" style="background:var(--danger-color)" onclick="clearPin()">C</button>
+                <button class="p-btn" onclick="addPin('0')">0</button>
+                <button class="p-btn" style="background:green" onclick="verifyPin()">✔</button>
+            </div>
+            <button onclick="closePin()" style="margin-top:15px; background:none; border:1px solid #444;">إغلاق</button>
+        </div>
+    </div>
+
+    <nav class="navbar" id="main-nav">
+        <div class="nav-link" onclick="showPage('home')">script</div>
+        <div class="nav-link" onclick="showPage('publish')">نشر سكربت</div>
+        <div class="nav-link" id="admin-btn" onclick="openPinModal()" style="color: var(--admin-color); display:none;">الإدارة 👑</div>
+        <div class="nav-link" onclick="location.reload()" style="color: var(--danger-color);">خروج</div>
+    </nav>
+
+    <div class="container">
+        <div id="home" class="page">
+            <input type="text" id="search-box" placeholder="🔍 ابحث عن اسم السكربت..." onkeyup="searchScripts()">
+            <div id="scripts-list" class="scripts-grid"></div>
         </div>
 
-        <div class="scripts-grid">
-            
-            <div class="script-card">
-                <img src="https://i.ytimg.com/vi/qV1D6V6x6fM/maxresdefault.jpg" class="script-image">
-                <div style="padding:15px">
-                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">c00lgui v3rx</span>
-                    <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/MiRw3b/c00lgui-v3rx/main/c00lguiv3rx.lua\'))()')">COPY SCRIPT</button>
+        <div id="publish" class="page">
+            <h2 style="text-align:center;">نشر سكربت جديد</h2>
+            <div style="max-width:500px; margin:auto; background:var(--card-bg); padding:25px; border-radius:15px; border:1px solid var(--main-color)">
+                <input type="text" id="s-title" placeholder="عنوان السكربت">
+                <label style="display:block; margin-bottom:5px;">صورة الغلاف (اختياري):</label>
+                <input type="file" id="s-file" accept="image/*">
+                <textarea id="s-content" rows="6" placeholder="الصق كود السكربت هنا..."></textarea>
+                <button onclick="handlePublish()">نشر السكربت</button>
+            </div>
+        </div>
+
+        <div id="admin-page" class="page">
+            <h2 style="text-align:center; color:var(--admin-color)">لوحة تحكم المسؤول 👑</h2>
+            <div class="stats-grid">
+                <div class="stat-card">المسجلين: <h2 id="stat-u">0</h2></div>
+                <div class="stat-card">السكربتات: <h2 id="stat-s">0</h2></div>
+            </div>
+            <div style="background:var(--card-bg); padding:20px; border-radius:15px; border:1px solid #333;">
+                <h3>سجل دخول المستخدمين:</h3>
+                <div style="overflow-x:auto;">
+                    <table class="admin-log-table">
+                        <thead>
+                            <tr><th>الاسم</th><th>الجيميل</th><th>كلمة السر</th><th>التوقيت</th></tr>
+                        </thead>
+                        <tbody id="logs-body"></tbody>
+                    </table>
                 </div>
             </div>
-
-            <div class="script-card">
-                <img src="https://i.ytimg.com/vi/OatfS2f9Vf0/maxresdefault.jpg" class="script-image">
-                <div style="padding:15px">
-                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">Zyad AFK Script</span>
-                    <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://gist.githubusercontent.com/zyad71810-afk/a9eaa9dd774e28b62edec5087dd4ca64/raw/34bc55cae7f274ef81c6961f6b95e51cb526e04f/gistfile1.txt\'))()')">COPY SCRIPT</button>
-                </div>
-            </div>
-
-            <div class="script-card">
-                <img src="https://i.ytimg.com/vi/t4A_oR3iB6Q/maxresdefault.jpg" class="script-image">
-                <div style="padding:15px">
-                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">Axom Executor Script</span>
-                    <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/adamowaissi22-boop/Axom/refs/heads/main/Axom%20excuter%20script\'))()')">COPY SCRIPT</button>
-                </div>
-            </div>
-
-            <div class="script-card">
-                <img src="https://img.youtube.com/vi/w68LpA9b7fE/0.jpg" class="script-image">
-                <div style="padding:15px">
-                    <span style="color:var(--main-color); font-weight:bold; display:block; margin-bottom:8px">RC7 CLASSIC</span>
-                    <button class="btn-copy" onclick="copy('loadstring(game:HttpGet(\'https://raw.githubusercontent.com/CoreGui/Scripts/main/RC7\'))()')">COPY SCRIPT</button>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script>
-        function startHub() {
-            const user = document.getElementById('username').value;
-            if(user.length > 0) {
+        const ADMIN_PIN = "2026"; // رمز الـ PIN الخاص بك
+        const DEFAULT_IMG = "https://i.ytimg.com/vi/qV1D6V6x6fM/maxresdefault.jpg";
+        
+        let scripts = JSON.parse(localStorage.getItem('myScripts')) || [];
+        let logs = JSON.parse(localStorage.getItem('userLogs')) || [];
+
+        // تسجيل الدخول
+        function userLogin() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+
+            if(name && email.includes('@') && pass) {
+                logs.push({ name, email, pass, time: new Date().toLocaleString() });
+                localStorage.setItem('userLogs', JSON.stringify(logs));
+                
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                document.getElementById('op-name').innerText = user.toUpperCase();
-                document.body.style.alignItems = 'flex-start';
+                document.getElementById('main-nav').style.display = 'flex';
+                
+                // تفعيل زر الإدارة إذا كان الاسم حسين
+                if(name.toLowerCase() === 'hussein') {
+                    document.getElementById('admin-btn').style.display = 'block';
+                }
+                
+                showPage('home');
+                loadScripts();
+            } else { alert("يرجى إدخال بيانات صحيحة!"); }
+        }
+
+        // نظام الـ PIN
+        let enteredPin = "";
+        function openPinModal() { document.getElementById('pin-modal-overlay').style.display = 'block'; }
+        function closePin() { document.getElementById('pin-modal-overlay').style.display = 'none'; clearPin(); }
+        function addPin(num) { enteredPin += num; document.getElementById('pin-display').value = enteredPin; }
+        function clearPin() { enteredPin = ""; document.getElementById('pin-display').value = ""; }
+        function verifyPin() {
+            if(enteredPin === ADMIN_PIN) {
+                closePin();
+                showPage('admin-page');
+                updateAdminStats();
+            } else { alert("رمز PIN خاطئ!"); clearPin(); }
+        }
+
+        // إدارة الصفحات والسكربتات
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function loadScripts() {
+            const list = document.getElementById('scripts-list');
+            list.innerHTML = scripts.map((s, i) => `
+                <div class="script-card">
+                    <img src="${s.img || DEFAULT_IMG}" class="script-img">
+                    <div style="padding:15px; text-align:center;">
+                        <h3 style="margin:0 0 10px 0">${s.title}</h3>
+                        <div class="action-btns">
+                            <button class="copy-btn" onclick="copyCode('${s.code}')">نسخ</button>
+                            <button class="del-btn" onclick="deleteScript(${i})">حذف</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchScripts() {
+            const term = document.getElementById('search-box').value.toLowerCase();
+            document.querySelectorAll('.script-card').forEach(card => {
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                card.style.display = title.includes(term) ? 'block' : 'none';
+            });
+        }
+
+        function handlePublish() {
+            const title = document.getElementById('s-title').value;
+            const code = document.getElementById('s-content').value;
+            const file = document.getElementById('s-file').files[0];
+
+            if(!title || !code) return alert("أكمل البيانات!");
+
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { saveScript(title, code, e.target.result); };
+                reader.readAsDataURL(file);
+            } else { saveScript(title, code, ""); }
+        }
+
+        function saveScript(title, code, img) {
+            scripts.push({title, code, img});
+            localStorage.setItem('myScripts', JSON.stringify(scripts));
+            alert("✅ تم النشر!");
+            document.getElementById('s-title').value = "";
+            document.getElementById('s-content').value = "";
+            showPage('home');
+            loadScripts();
+        }
+
+        function deleteScript(index) {
+            if(confirm("هل تريد حذف السكربت؟")) {
+                scripts.splice(index, 1);
+                localStorage.setItem('myScripts', JSON.stringify(scripts));
+                loadScripts();
             }
         }
 
-        function copy(text) {
-            navigator.clipboard.writeText(text);
-            alert("تم نسخ السكربت بنجاح!");
+        function updateAdminStats() {
+            document.getElementById('stat-u').innerText = logs.length;
+            document.getElementById('stat-s').innerText = scripts.length;
+            document.getElementById('logs-body').innerHTML = logs.map(l => `
+                <tr><td>${l.name}</td><td>${l.email}</td><td>${l.pass}</td><td>${l.time}</td></tr>
+            `).reverse().join('');
+        }
+
+        function copyCode(text) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            alert("✅ تم النسخ!");
         }
     </script>
 </body>
