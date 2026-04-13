@@ -90,8 +90,8 @@
 <body onload="checkLoginStatus()">
 
     <div id="login-screen" style="display: none;">
-        <h2 style="color:var(--main-color)">🔱 HusseinMod Community 🔱</h2>
-        <input type="text" id="reg-name" placeholder="ادخل اسمك المستعار">
+        <h2 style="color:var(--main-color)">سجل دهول</h2>
+        <input type="text" id="reg-name" placeholder="ادخل اسمك">
         <input type="email" id="reg-email" placeholder="بريدك الإلكتروني">
         <input type="password" id="reg-pass" placeholder="كلمة المرور">
         <button onclick="userLogin()">دخول والمشاركة</button>
@@ -120,8 +120,8 @@
     </div>
 
     <nav class="navbar" id="main-nav">
-        <div class="nav-link" onclick="showPage('home')">الرئيسية</div>
-        <div class="nav-link" onclick="showPage('publish')">نشر سكربت</div>
+        <div class="nav-link" onclick="showPage('home')">السكربتات</div>
+        <div class="nav-link" onclick="showPage('publish')">نشر السكربتات</div>
         <div class="nav-link" id="admin-btn" onclick="openPinModal()" style="color: var(--admin-color); display:none;">إدارة النظام 👑</div>
         <div class="nav-link" onclick="logout()" style="color: var(--danger-color);">خروج</div>
     </nav>
@@ -138,7 +138,7 @@
                 <input type="text" id="s-title" placeholder="اسم السكربت">
                 <input type="file" id="s-file" accept="image/*">
                 <textarea id="s-content" rows="6" placeholder="الصق الكود هنا..."></textarea>
-                <button onclick="handlePublish()">نشر للجميع ✅</button>
+                <button onclick="handlePublish()">نشر</button>
             </div>
         </div>
 
@@ -187,7 +187,7 @@
             const file = document.getElementById('s-file').files[0];
             const author = localStorage.getItem('currentUserName') || "مجهول";
 
-            if(!title || !code) return alert("الرجاء كتابة العنوان والكود!");
+            if(!title || !code) return alert("اكتب الكود !");
 
             if(file) {
                 const reader = new FileReader();
@@ -198,7 +198,7 @@
 
         function saveToFirebase(t, c, i, a) {
             push(ref(db, 'scripts/'), { title: t, code: c, img: i, author: a });
-            alert("✅ تم النشر عالمياً!");
+            alert("انشؤ");
             document.getElementById('s-title').value = "";
             document.getElementById('s-content').value = "";
             showPage('home');
@@ -228,7 +228,7 @@
         });
 
         window.deleteScript = function(id) {
-            if(confirm("هل أنت متأكد من حذف هذا السكربت من السيرفر؟")) {
+            if(confirm("هل أنت متاكد من الحذف")) {
                 remove(ref(db, 'scripts/' + id));
             }
         };
@@ -246,7 +246,7 @@
     </script>
 
     <script>
-        const ADMIN_PIN = "2026"; 
+        const ADMIN_PIN = "admin888"; 
 
         function checkLoginStatus() {
             if (localStorage.getItem('isLoggedIn') === 'true') {
@@ -276,7 +276,7 @@
         function addPin(n) { enteredPin += n; document.getElementById('pin-display').value = enteredPin; }
         function verifyPin() {
             if(enteredPin === ADMIN_PIN) { closePin(); showPage('admin-page'); }
-            else { alert("PIN خاطئ!"); clearPin(); }
+            else { alert("PIN خطا"); clearPin(); }
         }
         function clearPin() { enteredPin = ""; document.getElementById('pin-display').value = ""; }
 
@@ -285,7 +285,7 @@
             document.getElementById(id).style.display = 'block';
         }
 
-        function copyCode(text) { navigator.clipboard.writeText(text); alert("✅ تم النسخ!"); }
+        function copyCode(text) { navigator.clipboard.writeText(text); alert("انسخ"); }
     </script>
 </body>
 </html>
