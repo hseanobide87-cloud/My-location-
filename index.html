@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HusseinMod | Pro Edition</title>
+    <title>HusseinMod | Public Community</title>
     <style>
         :root {
             --main-color: #007bff;
-            --card-bg: rgba(10, 10, 10, 0.95);
+            --card-bg: rgba(15, 15, 15, 0.95);
             --text-main: #ffffff;
             --nav-bg: rgba(0, 0, 0, 0.9);
             --danger-color: #ff4d4d;
@@ -27,7 +27,6 @@
             background: rgba(0, 0, 0, 0.85); z-index: 0;
         }
 
-        /* القائمة العلوية */
         .navbar {
             position: fixed; top: 0; width: 100%;
             background: var(--nav-bg); display: none;
@@ -39,7 +38,6 @@
 
         .container { position: relative; z-index: 1; width: 95%; max-width: 1100px; margin-top: 100px; }
 
-        /* واجهات الدخول والـ PIN */
         #login-screen, .pin-modal {
             background: var(--card-bg); padding: 30px; border-radius: 20px;
             border: 1px solid var(--main-color); text-align: center;
@@ -49,7 +47,6 @@
         .page { display: none; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* البحث والسكربتات */
         #search-box {
             width: 100%; max-width: 500px; margin: 0 auto 30px auto;
             display: block; padding: 12px; border-radius: 25px;
@@ -58,10 +55,18 @@
         }
 
         .scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
         .script-card {
             background: var(--card-bg); border-radius: 15px; border: 1px solid #333;
-            overflow: hidden; text-align: center; padding-bottom: 15px;
+            overflow: hidden; text-align: center; padding-bottom: 15px; position: relative;
         }
+
+        .author-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: var(--main-color); color: white;
+            padding: 3px 10px; border-radius: 10px; font-size: 10px;
+        }
+
         .script-img { width: 100%; height: 150px; object-fit: cover; }
 
         input, textarea {
@@ -75,10 +80,6 @@
             padding: 12px; cursor: pointer; font-weight: bold; border-radius: 8px; width: 100%;
         }
 
-        /* الإحصائيات وسجل الإدارة */
-        .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-card { flex: 1; background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid var(--admin-color); text-align: center; }
-        
         .pin-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .p-btn { background: #222; border: 1px solid #444; padding: 15px; font-size: 20px; border-radius: 8px; }
         
@@ -90,16 +91,16 @@
 <body onload="checkLoginStatus()">
 
     <div id="login-screen" style="display: none;">
-        <h2 style="color:var(--main-color)">🔱 HusseinMod 🔱</h2>
-        <input type="text" id="reg-name" placeholder="الاسم المستعار">
-        <input type="email" id="reg-email" placeholder="الجيميل (Gmail)">
-        <input type="password" id="reg-pass" placeholder="كلمة السر">
-        <button onclick="userLogin()">دخول النظام</button>
+        <h2 style="color:var(--main-color)">🔱 HusseinMod Community 🔱</h2>
+        <input type="text" id="reg-name" placeholder="ادخل اسمك المستعار">
+        <input type="email" id="reg-email" placeholder="بريدك الإلكتروني">
+        <input type="password" id="reg-pass" placeholder="كلمة المرور">
+        <button onclick="userLogin()">دخول والمشاركة</button>
     </div>
 
     <div id="pin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100;">
         <div class="pin-modal">
-            <h3 style="color:var(--admin-color)">رمز الأمان (PIN)</h3>
+            <h3 style="color:var(--admin-color)">تحقق المسؤول</h3>
             <input type="password" id="pin-display" readonly style="text-align:center; font-size:24px; letter-spacing:5px;">
             <div class="pin-btns">
                 <button class="p-btn" onclick="addPin('1')">1</button>
@@ -122,45 +123,37 @@
     <nav class="navbar" id="main-nav">
         <div class="nav-link" onclick="showPage('home')">الرئيسية</div>
         <div class="nav-link" onclick="showPage('publish')">نشر سكربت</div>
-        <div class="nav-link" id="admin-btn" onclick="openPinModal()" style="color: var(--admin-color); display:none;">الإدارة 👑</div>
+        <div class="nav-link" id="admin-btn" onclick="openPinModal()" style="color: var(--admin-color); display:none;">إدارة النظام 👑</div>
         <div class="nav-link" onclick="logout()" style="color: var(--danger-color);">خروج</div>
     </nav>
 
     <div class="container">
         <div id="home" class="page">
-            <input type="text" id="search-box" placeholder="🔍 ابحث عن سكربت (Roblox, PUBG...)" onkeyup="searchScripts()">
+            <input type="text" id="search-box" placeholder="🔍 ابحث عن سكربتات الأعضاء..." onkeyup="searchScripts()">
             <div id="scripts-list" class="scripts-grid"></div>
         </div>
 
         <div id="publish" class="page">
             <div style="max-width:500px; margin:auto; background:var(--card-bg); padding:25px; border-radius:20px; border:1px solid var(--main-color)">
-                <h2 style="text-align:center; margin-top:0;">نشر سكربت جديد</h2>
-                <input type="text" id="s-title" placeholder="عنوان السكربت">
+                <h2 style="text-align:center; margin-top:0;">شارك سكربتك مع الجميع</h2>
+                <input type="text" id="s-title" placeholder="اسم السكربت">
                 <input type="file" id="s-file" accept="image/*">
-                <textarea id="s-content" rows="6" placeholder="الصق كود السكربت هنا..."></textarea>
-                <button onclick="handlePublish()">نشر الآن</button>
+                <textarea id="s-content" rows="6" placeholder="الصق الكود هنا..."></textarea>
+                <button onclick="handlePublish()">نشر للجميع ✅</button>
             </div>
         </div>
 
         <div id="admin-page" class="page">
-            <h2 style="text-align:center; color:var(--admin-color)">لوحة تحكم المسؤول 👑</h2>
-            <div class="stats-grid">
-                <div class="stat-card">المستخدمين: <h2 id="stat-u">0</h2></div>
-                <div class="stat-card">السكربتات: <h2 id="stat-s">0</h2></div>
-            </div>
-            <div style="background:var(--card-bg); padding:15px; border-radius:15px; border:1px solid #333; font-size: 13px;">
-                <h3 style="margin-top:0;">سجل الدخول:</h3>
-                <div id="logs-area"></div>
-            </div>
+            <h2 style="text-align:center; color:var(--admin-color)">لوحة الإدارة 👑</h2>
+            <div id="admin-logs-area" style="background:var(--card-bg); padding:15px; border-radius:15px; border:1px solid #333; font-size: 13px;"></div>
         </div>
     </div>
 
     <script>
-        const ADMIN_PIN = "2026"; // رمز الـ PIN الخاص بك يا حسين
+        const ADMIN_PIN = "2026"; 
         let scripts = JSON.parse(localStorage.getItem('myScripts')) || [];
         let logs = JSON.parse(localStorage.getItem('userLogs')) || [];
 
-        // 1. فحص حالة الدخول عند تحميل الصفحة
         function checkLoginStatus() {
             if (localStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('login-screen').style.display = 'none';
@@ -175,7 +168,6 @@
             }
         }
 
-        // 2. تسجيل دخول جديد
         function userLogin() {
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
@@ -184,42 +176,39 @@
             if(name && email && pass) {
                 logs.push({ name, email, pass, time: new Date().toLocaleString() });
                 localStorage.setItem('userLogs', JSON.stringify(logs));
-                
-                // حفظ الجلسة
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUserName', name);
-                
                 checkLoginStatus();
-            } else { alert("أكمل البيانات!"); }
+            } else { alert("أكمل بياناتك للدخول!"); }
         }
 
-        // 3. الخروج
         function logout() {
-            if(confirm("هل تريد تسجيل الخروج؟")) {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('currentUserName');
-                location.reload();
-            }
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUserName');
+            location.reload();
         }
 
-        // إدارة السكربتات
         function handlePublish() {
             const title = document.getElementById('s-title').value;
             const code = document.getElementById('s-content').value;
             const file = document.getElementById('s-file').files[0];
-            if(!title || !code) return alert("أكمل البيانات!");
+            const author = localStorage.getItem('currentUserName') || "مجهول";
+
+            if(!title || !code) return alert("الرجاء كتابة العنوان والكود!");
 
             if(file) {
                 const reader = new FileReader();
-                reader.onload = (e) => saveAndShow(title, code, e.target.result);
+                reader.onload = (e) => saveScript(title, code, e.target.result, author);
                 reader.readAsDataURL(file);
-            } else { saveAndShow(title, code, ""); }
+            } else { saveScript(title, code, "", author); }
         }
 
-        function saveAndShow(t, c, i) {
-            scripts.push({title: t, code: c, img: i});
+        function saveScript(t, c, i, a) {
+            scripts.push({title: t, code: c, img: i, author: a});
             localStorage.setItem('myScripts', JSON.stringify(scripts));
-            alert("✅ تم!");
+            alert("✅ تم نشر السكربت الخاص بك بنجاح!");
+            document.getElementById('s-title').value = "";
+            document.getElementById('s-content').value = "";
             showPage('home');
             loadScripts();
         }
@@ -228,13 +217,14 @@
             const list = document.getElementById('scripts-list');
             list.innerHTML = scripts.map((s, i) => `
                 <div class="script-card">
+                    <span class="author-badge">بواسطة: ${s.author}</span>
                     <img src="${s.img || 'https://via.placeholder.com/150'}" class="script-img">
-                    <h3>${s.title}</h3>
+                    <h3 style="padding: 10px 5px; margin:0">${s.title}</h3>
                     <div class="action-btns">
                         <button class="copy-btn" onclick="copyCode('${s.code}')">نسخ</button>
-                        <button class="del-btn" onclick="deleteScript(${i})">حذف</button>
+                        ${(localStorage.getItem('currentUserName').toLowerCase() === 'hussein' || s.author === localStorage.getItem('currentUserName')) ? `<button class="del-btn" onclick="deleteScript(${i})">حذف</button>` : ''}
                     </div>
-                </div>`).join('');
+                </div>`).reverse().join('');
         }
 
         function searchScripts() {
@@ -245,23 +235,26 @@
         }
 
         function deleteScript(index) {
-            if(confirm("حذف؟")) { scripts.splice(index, 1); localStorage.setItem('myScripts', JSON.stringify(scripts)); loadScripts(); }
+            if(confirm("هل أنت متأكد من حذف هذا السكربت؟")) {
+                scripts.splice(scripts.length - 1 - index, 1);
+                localStorage.setItem('myScripts', JSON.stringify(scripts));
+                loadScripts();
+            }
         }
 
-        // نظام الـ PIN والمسؤول
         let enteredPin = "";
         function openPinModal() { document.getElementById('pin-modal-overlay').style.display = 'block'; }
         function closePin() { document.getElementById('pin-modal-overlay').style.display = 'none'; enteredPin = ""; document.getElementById('pin-display').value = ""; }
         function addPin(n) { enteredPin += n; document.getElementById('pin-display').value = enteredPin; }
         function verifyPin() {
             if(enteredPin === ADMIN_PIN) { closePin(); showPage('admin-page'); updateAdminUI(); }
-            else { alert("رمز خاطئ!"); enteredPin = ""; document.getElementById('pin-display').value = ""; }
+            else { alert("PIN خاطئ!"); clearPin(); }
         }
+        function clearPin() { enteredPin = ""; document.getElementById('pin-display').value = ""; }
 
         function updateAdminUI() {
-            document.getElementById('stat-u').innerText = logs.length;
-            document.getElementById('stat-s').innerText = scripts.length;
-            document.getElementById('logs-area').innerHTML = logs.map(l => `<div>👤 ${l.name} | 🔑 ${l.pass} | 📅 ${l.time}</div><hr>`).reverse().join('');
+            const area = document.getElementById('admin-logs-area');
+            area.innerHTML = `<h3>إحصائيات الأعضاء (${logs.length}):</h3>` + logs.map(l => `<div>👤 ${l.name} | 🔑 ${l.pass} | 📅 ${l.time}</div><hr>`).reverse().join('');
         }
 
         function showPage(id) {
