@@ -3,156 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>script HUB</title>
+    <title>موقع شخصيات</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <style>
-        :root {
-            --main-color: #007bff;
-            --card-bg: rgba(15, 15, 15, 0.95);
-            --text-main: #ffffff;
-            --nav-bg: rgba(0, 0, 0, 0.9);
-            --danger-color: #ff4d4d;
-            --admin-color: #ffcc00;
+        :root { --bg-color: #050505; --card-bg: #111111; --primary-rgb: #ff0000; }
+        @keyframes rgb-glow {
+            0% { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+            50% { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; }
+            100% { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
         }
+        body { background-color: var(--bg-color); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 3rem; animation: rgb-text 4s infinite linear; }
+        @keyframes rgb-text { 0% { color: #ff0000; } 50% { color: #00ff00; } 100% { color: #ff0000; } }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0; min-height: 100vh;
-            background: black url('cristiano.png') no-repeat center center fixed;
-            background-size: cover; color: var(--text-main);
-            display: flex; flex-direction: column; align-items: center;
-        }
+        /* ميزة 2: عداد الزوار */
+        .visitor-count { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #333; display: inline-block; margin-bottom: 20px; }
 
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85); z-index: 0;
-        }
+        /* ميزة 3: البحث والتصفية */
+        .controls { width: 95%; max-width: 1200px; margin: 0 auto 30px auto; display: flex; gap: 10px; flex-wrap: wrap; }
+        .search-bar { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: white; min-width: 250px; }
+        .filter-btn { padding: 10px 20px; border-radius: 8px; border: 1px solid #333; background: #222; color: white; cursor: pointer; }
+        .filter-btn.active { border-color: #00ff00; color: #00ff00; }
 
-        .navbar {
-            position: fixed; top: 0; width: 100%;
-            background: var(--nav-bg); display: none;
-            justify-content: center; padding: 15px 0;
-            z-index: 10; border-bottom: 2px solid var(--main-color);
-        }
-
-        .nav-link { color: white; margin: 0 15px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 14px; }
-        .container { position: relative; z-index: 1; width: 95%; max-width: 1100px; margin-top: 100px; }
-
-        #login-screen, .pin-modal {
-            background: var(--card-bg); padding: 30px; border-radius: 20px;
-            border: 1px solid var(--main-color); text-align: center;
-            width: 320px; margin: 80px auto; backdrop-filter: blur(15px);
-        }
-
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        #search-box {
-            width: 100%; max-width: 500px; margin: 0 auto 30px auto;
-            display: block; padding: 12px; border-radius: 25px;
-            border: 1px solid var(--main-color); background: rgba(0,0,0,0.6);
-            color: white; text-align: center; outline: none;
-        }
-
-        .scripts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; width: 95%; max-width: 1200px; margin: 0 auto; }
+        .item-card { background: var(--card-bg); border: 2px solid; border-radius: 15px; padding: 15px; animation: rgb-glow 5s infinite linear; position: relative; }
+        .item-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
         
-        .script-card {
-            background: var(--card-bg); border-radius: 15px; border: 1px solid #333;
-            overflow: hidden; text-align: center; padding-bottom: 15px; position: relative;
-        }
+        /* ميزة 15: التوقيت */
+        .timestamp { font-size: 0.75rem; color: #666; display: block; margin-bottom: 10px; }
 
-        .author-badge {
-            position: absolute; top: 10px; right: 10px;
-            background: var(--main-color); color: white;
-            padding: 3px 10px; border-radius: 10px; font-size: 10px;
-        }
+        .trade-label { font-size: 0.9rem; color: #aaa; margin-top: 5px; }
+        .wanted { color: #00ff00; font-weight: bold; font-size: 1.2rem; }
 
-        .script-img { width: 100%; height: 150px; object-fit: cover; }
+        /* ميزة 7: التعليقات */
+        .comment-section { margin-top: 15px; border-top: 1px solid #222; padding-top: 10px; text-align: right; }
+        .comment-list { max-height: 80px; overflow-y: auto; font-size: 0.85rem; color: #ccc; margin-bottom: 5px; }
+        .comment-input { width: 100%; padding: 5px; background: #000; border: 1px solid #333; color: white; border-radius: 4px; box-sizing: border-box; }
 
-        input, textarea {
-            width: 100%; padding: 12px; margin-bottom: 12px;
-            background: #111; border: 1px solid #444;
-            color: #fff; border-radius: 8px; box-sizing: border-box;
-        }
+        /* ميزة 1: الإشعارات */
+        #notification { fixed; bottom: 20px; left: 20px; padding: 15px 25px; border-radius: 10px; background: #111; border-left: 5px solid #00ff00; display: none; z-index: 1000; animation: slideIn 0.5s forwards; }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
-        button {
-            background: var(--main-color); color: white; border: none;
-            padding: 12px; cursor: pointer; font-weight: bold; border-radius: 8px; width: 100%;
-        }
-
-        .pin-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .p-btn { background: #222; border: 1px solid #444; padding: 15px; font-size: 20px; border-radius: 8px; color: white; }
-        
-        .action-btns { display: flex; gap: 10px; padding: 10px; }
-        .copy-btn { background: transparent; border: 1px solid var(--main-color); color: var(--main-color); }
-        .del-btn { background: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
+        #admin-panel { display: none; background: #151515; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 90%; max-width: 450px; margin: 20px auto; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        .btn { background: white; color: black; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .admin-trigger { margin-top: 50px; color: #0a0a0a; cursor: pointer; text-align: center; }
     </style>
 </head>
-<body onload="checkLoginStatus()">
+<body>
 
-    <div id="login-screen" style="display: none;">
-        <h2 style="color:var(--main-color)">سجل دخول</h2>
-        <input type="text" id="reg-name" placeholder="ادخل اسمك">
-        <input type="email" id="reg-email" placeholder="بريدك الإلكتروني">
-        <input type="password" id="reg-pass" placeholder="كلمة المرور">
-        <button onclick="userLogin()">دخول والمشاركة</button>
+    <div class="header">
+        <h1>اهلا وسهلا بك</h1>
+        <div class="visitor-count">المتصلون الآن: <span id="v-count">1</span></div>
     </div>
 
-    <div id="pin-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100;">
-        <div class="pin-modal">
-            <h3 style="color:var(--admin-color)">تحقق المسؤول</h3>
-            <input type="password" id="pin-display" readonly style="text-align:center; font-size:24px; letter-spacing:5px;">
-            <div class="pin-btns">
-                <button class="p-btn" onclick="addPin('1')">1</button>
-                <button class="p-btn" onclick="addPin('2')">2</button>
-                <button class="p-btn" onclick="addPin('3')">3</button>
-                <button class="p-btn" onclick="addPin('4')">4</button>
-                <button class="p-btn" onclick="addPin('5')">5</button>
-                <button class="p-btn" onclick="addPin('6')">6</button>
-                <button class="p-btn" onclick="addPin('7')">7</button>
-                <button class="p-btn" onclick="addPin('8')">8</button>
-                <button class="p-btn" onclick="addPin('9')">9</button>
-                <button class="p-btn" style="background:var(--danger-color)" onclick="clearPin()">C</button>
-                <button class="p-btn" onclick="addPin('0')">0</button>
-                <button class="p-btn" style="background:green" onclick="verifyPin()">✔</button>
-            </div>
-            <button onclick="closePin()" style="margin-top:10px; background:none; border:1px solid #333; color: white;">إلغاء</button>
-        </div>
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-bar" placeholder="ابحث عن شخصية أو عنصر..." onkeyup="filterItems()">
+        <button class="filter-btn active" onclick="setFilter('الكل')">الكل</button>
+        <button class="filter-btn" onclick="setFilter('شخصيات')">شخصيات</button>
+        <button class="filter-btn" onclick="setFilter('أسلحة')">أسلحة</button>
     </div>
 
-    <nav class="navbar" id="main-nav">
-        <div class="nav-link" onclick="showPage('home')">السكربتات</div>
-        <div class="nav-link" onclick="showPage('publish')">نشر السكربتات</div>
-        <div class="nav-link" id="admin-btn" onclick="openPinModal()" style="color: var(--admin-color); display:none;">إدارة النظام 👑</div>
-        <div class="nav-link" onclick="logout()" style="color: var(--danger-color);">خروج</div>
-    </nav>
+    <div class="container" id="main-store"></div>
 
-    <div class="container">
-        <div id="home" class="page">
-            <input type="text" id="search-box" placeholder="🔍 ابحث عن سكربتات الأعضاء..." onkeyup="searchScripts()">
-            <div id="scripts-list" class="scripts-grid"></div>
-        </div>
+    <div id="notification"></div>
 
-        <div id="publish" class="page">
-            <div style="max-width:500px; margin:auto; background:var(--card-bg); padding:25px; border-radius:20px; border:1px solid var(--main-color)">
-                <h2 style="text-align:center; margin-top:0;">شارك سكربتك مع الجميع</h2>
-                <input type="text" id="s-title" placeholder="اسم السكربت">
-                <input type="file" id="s-file" accept="image/*">
-                <textarea id="s-content" rows="6" placeholder="الصق الكود هنا..."></textarea>
-                <button onclick="handlePublish()">نشر</button>
-            </div>
-        </div>
+    <div class="admin-trigger" onclick="openVault()">.</div>
 
-        <div id="admin-page" class="page">
-            <h2 style="text-align:center; color:var(--admin-color)">لوحة الإدارة 👑</h2>
-            <div id="admin-logs-area" style="background:var(--card-bg); padding:15px; border-radius:15px; border:1px solid #333; font-size: 13px; color: white;"></div>
-        </div>
+    <div id="admin-panel">
+        <h2 style="color: #00ff00; text-align: center;">إدارة السحابة</h2>
+        <input type="file" id="p-image" accept="image/*" onchange="previewImage(this)">
+        <select id="p-category">
+            <option value="شخصيات">شخصيات</option>
+            <option value="أسلحة">أسلحة</option>
+            <option value="أخرى">أخرى</option>
+        </select>
+        <input type="text" id="p-have" placeholder="ماذا تملك؟">
+        <input type="text" id="p-want" placeholder="ماذا تطلب؟">
+        <button class="btn" style="background: #00ff00;" onclick="publish()">نشر 🚀</button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        // إعدادات Firebase الخاصة بك
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyALcYej3t1CVT8YME1nM3kV7zGU6bajpyY",
             authDomain: "script-7e285.firebaseapp.com",
@@ -160,132 +95,127 @@
             projectId: "script-7e285",
             storageBucket: "script-7e285.firebasestorage.app",
             messagingSenderId: "418267173592",
-            appId: "1:418267173592:web:932b8d411d0f0e3e8bbdad"
+            appId: "1:418267173592:web:932b8d411d0f0e3e8bbdad",
+            measurementId: "G-SPRX07KF5N"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        let selectedImageData = "";
+        let currentFilter = 'الكل';
+        let isAdmin = false;
 
-        // وظائف النظام العالمية
-        window.userLogin = function() {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
+        // ميزة 2: عداد زوار بسيط (عشوائي للمحاكاة أو ربطه بـ Firebase)
+        document.getElementById('v-count').innerText = Math.floor(Math.random() * 10) + 1;
 
-            if(name && email && pass) {
-                // حفظ بيانات الدخول في Firebase لكي تراها في لوحة الإدارة
-                push(ref(db, 'logs/'), { name, email, pass, time: new Date().toLocaleString() });
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUserName', name);
-                checkLoginStatus();
-            } else { alert("أكمل بياناتك للدخول!"); }
-        };
-
-        window.handlePublish = function() {
-            const title = document.getElementById('s-title').value;
-            const code = document.getElementById('s-content').value;
-            const file = document.getElementById('s-file').files[0];
-            const author = localStorage.getItem('currentUserName') || "مجهول";
-
-            if(!title || !code) return alert("اكتب الكود !");
-
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => saveToFirebase(title, code, e.target.result, author);
-                reader.readAsDataURL(file);
-            } else { saveToFirebase(title, code, "", author); }
-        };
-
-        function saveToFirebase(t, c, i, a) {
-            push(ref(db, 'scripts/'), { title: t, code: c, img: i, author: a });
-            alert("انشؤ");
-            document.getElementById('s-title').value = "";
-            document.getElementById('s-content').value = "";
-            showPage('home');
+        // ميزة 1: نظام الإشعارات
+        function notify(msg) {
+            const n = document.getElementById('notification');
+            n.innerText = msg;
+            n.style.display = 'block';
+            setTimeout(() => { n.style.display = 'none'; }, 3000);
         }
 
-        // جلب السكربتات وتحديثها فورياً عند الجميع
-        onValue(ref(db, 'scripts/'), (snapshot) => {
-            const list = document.getElementById('scripts-list');
-            list.innerHTML = "";
-            const data = snapshot.val();
-            if(data) {
-                Object.keys(data).reverse().forEach(id => {
-                    const s = data[id];
-                    list.innerHTML += `
-                        <div class="script-card">
-                            <span class="author-badge">بواسطة: ${s.author}</span>
-                            <img src="${s.img || 'https://via.placeholder.com/150'}" class="script-img">
-                            <h3 style="padding: 10px 5px; margin:0">${s.title}</h3>
-                            <div class="action-btns">
-                                <button class="copy-btn" onclick="copyCode(\`${s.code.replace(/`/g, '\\`')}\`)">نسخ</button>
-                                ${(localStorage.getItem('currentUserName')?.toLowerCase() === 'hussein' || s.author === localStorage.getItem('currentUserName')) ? 
-                                `<button class="del-btn" onclick="deleteScript('${id}')">حذف</button>` : ''}
-                            </div>
-                        </div>`;
-                });
-            }
+        database.ref('trades').on('value', (snapshot) => {
+            renderStore(snapshot);
         });
 
-        window.deleteScript = function(id) {
-            if(confirm("هل أنت متاكد من الحذف")) {
-                remove(ref(db, 'scripts/' + id));
-            }
-        };
-
-        // جلب سجلات الأعضاء للوحة الإدارة
-        onValue(ref(db, 'logs/'), (snapshot) => {
-            const area = document.getElementById('admin-logs-area');
-            const data = snapshot.val();
-            if(data) {
-                const logsArr = Object.values(data).reverse();
-                area.innerHTML = `<h3>إحصائيات الأعضاء (${logsArr.length}):</h3>` + 
-                logsArr.map(l => `<div>👤 ${l.name} | 🔑 ${l.pass} | 📅 ${l.time}</div><hr>`).join('');
-            }
-        });
-    </script>
-
-    <script>
-        const ADMIN_PIN = "admin888"; 
-
-        function checkLoginStatus() {
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-nav').style.display = 'flex';
-                if(localStorage.getItem('currentUserName').toLowerCase() === 'hussein') {
-                    document.getElementById('admin-btn').style.display = 'block';
+        function renderStore(snapshot) {
+            const store = document.getElementById('main-store');
+            store.innerHTML = "";
+            snapshot.forEach((child) => {
+                const data = child.val();
+                if (currentFilter === 'الكل' || data.category === currentFilter) {
+                    displayTrade(data, child.key);
                 }
-                showPage('home');
-            } else {
-                document.getElementById('login-screen').style.display = 'block';
-            }
-        }
-
-        function logout() { localStorage.clear(); location.reload(); }
-
-        function searchScripts() {
-            const term = document.getElementById('search-box').value.toLowerCase();
-            document.querySelectorAll('.script-card').forEach(card => {
-                card.style.display = card.querySelector('h3').innerText.toLowerCase().includes(term) ? 'block' : 'none';
             });
         }
 
-        let enteredPin = "";
-        function openPinModal() { document.getElementById('pin-modal-overlay').style.display = 'block'; }
-        function closePin() { document.getElementById('pin-modal-overlay').style.display = 'none'; enteredPin = ""; document.getElementById('pin-display').value = ""; }
-        function addPin(n) { enteredPin += n; document.getElementById('pin-display').value = enteredPin; }
-        function verifyPin() {
-            if(enteredPin === ADMIN_PIN) { closePin(); showPage('admin-page'); }
-            else { alert("PIN خطا"); clearPin(); }
-        }
-        function clearPin() { enteredPin = ""; document.getElementById('pin-display').value = ""; }
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
+        function previewImage(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => { selectedImageData = e.target.result; notify("تم تجهيز الصورة!"); };
+            reader.readAsDataURL(input.files[0]);
         }
 
-        function copyCode(text) { navigator.clipboard.writeText(text); alert("انسخ"); }
+        function publish() {
+            const have = document.getElementById('p-have').value;
+            const want = document.getElementById('p-want').value;
+            const cat = document.getElementById('p-category').value;
+            if(have && want && selectedImageData) {
+                database.ref('trades').push({
+                    have, want, category: cat, image: selectedImageData,
+                    time: new Date().toLocaleString('ar-EG') // ميزة 15
+                }).then(() => {
+                    notify("تم النشر بنجاح!");
+                    document.getElementById('admin-panel').style.display = 'none';
+                });
+            }
+        }
+
+        function displayTrade(data, key) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <span class="timestamp">📅 ${data.time || 'منذ وقت طويل'}</span>
+                <img src="${data.image}"
+                <div class="wanted">${data.want}</div>
+                <div class="comment-section">
+                    <div class="comment-list" id="comments-${key}"></div>
+                    <input type="text" class="comment-input" placeholder="اكتب تعليق..." onkeypress="addComment(event, '${key}')">
+                </div>
+                ${isAdmin ? `<button onclick="deleteTrade('${key}')" style="background:red; color:white; border:none; width:100%; margin-top:10px; cursor:pointer;">حذف</button>` : ''}
+            `;
+            document.getElementById('main-store').prepend(card);
+            loadComments(key);
+        }
+
+        // ميزة 7: التعليقات
+        function addComment(e, key) {
+            if(e.key === 'Enter' && e.target.value) {
+                database.ref('comments/' + key).push(e.target.value);
+                e.target.value = "";
+                notify("تمت إضافة التعليق");
+            }
+        }
+
+        function loadComments(key) {
+            database.ref('comments/' + key).on('value', (snap) => {
+                const list = document.getElementById('comments-'+key);
+                list.innerHTML = "";
+                snap.forEach(c => {
+                    list.innerHTML += `<div>• ${c.val()}</div>`;
+                });
+            });
+        }
+
+        // ميزة 3: الفلترة والبحث
+        function setFilter(f) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            database.ref('trades').once('value', renderStore);
+        }
+
+        function filterItems() {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.item-card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = text.includes(val) ? 'block' : 'none';
+            });
+        }
+
+        function openVault() {
+            if(prompt("Code:") === "admin111") {
+                isAdmin = true;
+                document.getElementById('admin-panel').style.display = 'block';
+                notify("مرحباً بك يا زعيم");
+                database.ref('trades').once('value', renderStore);
+            }
+        }
+
+        function deleteTrade(key) {
+            if(confirm("حذف؟")) { database.ref('trades/'+key).remove(); database.ref('comments/'+key).remove(); }
+        }
     </script>
 </body>
-    </html>
+</html>
